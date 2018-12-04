@@ -1,12 +1,10 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Cookies = require('js-cookie');
 var Wechat = wx || {};
-var LocalStorage = window.localStorage || {};
+var LocalStorage = window && window.localStorage || {};
 /**
  * 过期单位
  * */
@@ -30,7 +28,7 @@ var Expire =
 function Expire(amount, unit) {
   _classCallCheck(this, Expire);
 
-  var offset = amount;
+  var offset = Math.max(1, parseFloat(amount));
   switch (unit || EXPIRE_UNIT.SECOND) {
     case EXPIRE_UNIT.MINUTE:
       offset *= 60;
@@ -48,63 +46,34 @@ function Expire(amount, unit) {
   this.expireDate = Date.now() + offset * 1000;
 };
 
-var Storage = function () {
-  function Storage() {
-    _classCallCheck(this, Storage);
+var Storage = function Storage() {
+  _classCallCheck(this, Storage);
 
-    this.EXPIRE_UNIT = EXPIRE_UNIT;
-    this.Expire = Expire;
-    this.supportWechatMiniProgram = typeof Wechat.getStorageSync === 'function' && typeof Wechat.setStorageSync === 'function' && typeof Wechat.removeStorageSync === 'function';
-    this.supportLocalStorage = typeof LocalStorage.getItem === 'function' && typeof LocalStorage.setItem === 'function' && typeof LocalStorage.removeItem === 'function';
-  }
+  this.EXPIRE_UNIT = EXPIRE_UNIT;
+  this.Expire = Expire;
+  var supportWechatMiniProgram = typeof Wechat.getStorageSync === 'function' && typeof Wechat.setStorageSync === 'function' && typeof Wechat.removeStorageSync === 'function';
+  var supportLocalStorage = typeof LocalStorage.getItem === 'function' && typeof LocalStorage.setItem === 'function' && typeof LocalStorage.removeItem === 'function';
+  this.set = function (key, data, expire) {
+    expire = expire || new this.Expire(30, this.EXPIRE_UNIT.DAY);
+    var value = JSON.stringify({
+      data: data, expire: expire.expireDate
+    });
+    return supportWechatMiniProgram ? Wechat['setStorageSync'](key, value) : supportLocalStorage ? LocalStorage['setItem'](key, value) : Cookies['set'](key, value, { expires: 365 });
+  };
 
-  _createClass(Storage, [{
-    key: 'set',
-    value: function set(key, data, expire) {
-      expire = expire || new this.Expire(30, this.EXPIRE_UNIT.DAY);
-      var value = JSON.stringify({
-        data: data, expire: expire.expireDate
-      });
-      if (this.supportWechatMiniProgram) {
-        Wechat['setStorageSync'](key, value);
-      } else if (this.supportLocalStorage) {
-        LocalStorage.setItem(key, value);
-      } else {
-        Cookies['set'](key, value, { expires: 365 });
-      }
+  this.get = function (key) {
+    var value = supportWechatMiniProgram ? Wechat['getStorageSync'](key) : supportLocalStorage ? LocalStorage['getItem'](key) : Cookies['get'](key);
+    var _package = JSON.parse(value || '{}');
+    if (Date.now() < _package.expire) {
+      return _package.data;
     }
-  }, {
-    key: 'get',
-    value: function get(key) {
-      var value = '{}';
-      if (this.supportWechatMiniProgram) {
-        value = Wechat['getStorageSync'](key);
-      } else if (this.supportLocalStorage) {
-        value = LocalStorage.getItem(key);
-      } else {
-        value = Cookies['get'](key);
-      }
-      var _package = JSON.parse(value || '{}');
-      if (Date.now() < _package.expire) {
-        return _package.data;
-      }
-      this.remove(key);
-      return null;
-    }
-  }, {
-    key: 'remove',
-    value: function remove(key) {
-      if (this.supportWechatMiniProgram) {
-        Wechat['removeStorageSync'](key);
-      } else if (this.supportLocalStorage) {
-        LocalStorage.removeItem(key);
-      } else {
-        Cookies['remove'](key);
-      }
-    }
-  }]);
+    this.remove(key);
+    return null;
+  };
 
-  return Storage;
-}();
+  this.remove = function (key) {
+    return supportWechatMiniProgram ? Wechat['removeStorageSync'](key, value) : supportLocalStorage ? LocalStorage['removeItem'](key, value) : Cookies['remove'](key);
+  };
+};
 
 module.exports = new Storage();

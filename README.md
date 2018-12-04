@@ -20,7 +20,7 @@ import StorageUtils from 'compatible-storage';
 StorageUtils.set('storage-key', { ...data...});
 
 // Custom expire time. eg: 2 hours.
-StorageUtils.set('storage-key', { ...data...}, new StorageUtils.Expire(2, this.EXPIRE_UNIT.HOUR));
+StorageUtils.set('storage-key', { ...data...}, new StorageUtils.Expire(2, StorageUtils.EXPIRE_UNIT.HOUR));
 
 // Get
 const value = StorageUtils.get('storage-key');
