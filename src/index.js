@@ -65,7 +65,7 @@ class Storage {
     };
 
     this.remove = function (key) {
-      return supportWechatMiniProgram ? Wechat['removeStorageSync'](key, value) : (supportLocalStorage ? LocalStorage['removeItem'](key, value) : Cookies['remove'](key));
+      return supportWechatMiniProgram ? Wechat['removeStorageSync'](key) : (supportLocalStorage ? LocalStorage['removeItem'](key) : Cookies['remove'](key));
     };
   }
 }
