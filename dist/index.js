@@ -3,8 +3,8 @@
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Cookies = require('js-cookie');
-var Wechat = wx || {};
-var LocalStorage = window && window.localStorage || {};
+var Wechat = typeof wx === 'undefined' ? {} : wx;
+var LocalStorage = typeof window === 'undefined' ? {} : window.localStorage || {};
 /**
  * 过期单位
  * */

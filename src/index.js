@@ -1,6 +1,6 @@
 const Cookies = require('js-cookie');
-const Wechat = wx || {};
-const LocalStorage = (window && window.localStorage) || {};
+const Wechat = typeof wx === 'undefined' ? {} : wx;
+const LocalStorage = typeof window === 'undefined' ? {} : ((window.localStorage) || {});
 /**
  * 过期单位
  * */
