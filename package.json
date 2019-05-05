@@ -1,6 +1,6 @@
 {
   "name": "compatible-storage",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -18,5 +18,13 @@
   },
   "dependencies": {
     "js-cookie": "^2.2.0"
+  },
+  "bugs": {
+    "url": "https://github.com/Chans-Open-Source/compatible-storage/issues"
+  },
+  "homepage": "https://github.com/Chans-Open-Source/compatible-storage",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chans-Open-Source/compatible-storage.git"
   }
 }
