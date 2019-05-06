@@ -1,6 +1,6 @@
 {
   "name": "compatible-storage",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -26,5 +26,16 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Chans-Open-Source/compatible-storage.git"
-  }
+  },
+  "keywords": [
+    "storage",
+    "localStorage",
+    "cookies",
+    "cache",
+    "wechat",
+    "miniprogram",
+    "小程序",
+    "微信小程序",
+    "缓存"
+  ]
 }
